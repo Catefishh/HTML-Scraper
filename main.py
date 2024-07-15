@@ -6,14 +6,14 @@ import json
 
 
 def scrape_website(url):
-    # Fetch the webpage
+    # 1. Fetch the webpage.
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    # Extract HTML
+    # 2. Extract HTML.
     html = soup.prettify()
 
-    # Extract CSS
+    # 3. Extract CSS.
     css = []
     for style in soup.find_all('style'):
         css.append(style.string)
@@ -26,7 +26,7 @@ def scrape_website(url):
                 css_response = requests.get(f"{url}/{css_url}")
             css.append(css_response.text)
 
-    # Extract APIs
+    # 4. Extract any information on APIs.
     apis = []
     scripts = soup.find_all('script')
     api_pattern = re.compile(r'https?://[^\s/$.?#].[^\s]*api[^\s]*')
@@ -34,17 +34,17 @@ def scrape_website(url):
         if script.string:
             apis.extend(api_pattern.findall(script.string))
 
-    # Extract metadata
+    # 6. Extract metadata.
     title = soup.title.string if soup.title else ''
     description = soup.find('meta', attrs={'name': 'description'})
     description = description['content'] if description else ''
     keywords = soup.find('meta', attrs={'name': 'keywords'})
     keywords = keywords['content'] if keywords else ''
 
-    # Extract content
+    # 7. Extract contents.
     content = ' '.join([p.text for p in soup.find_all('p')])
 
-    # Extract links
+    # 8. Extract any links.
     internal_links = []
     external_links = []
     for link in soup.find_all('a', href=True):
@@ -54,7 +54,7 @@ def scrape_website(url):
         elif href.startswith('http'):
             external_links.append(href)
 
-    # Analyze website structure
+    # 9. Analyse the structure of the website.
     structure = {
         'head': bool(soup.head),
         'body': bool(soup.body),
@@ -64,7 +64,7 @@ def scrape_website(url):
         'footer': bool(soup.footer),
     }
 
-    # Find keywords (simple frequency analysis)
+    # 10. Find keywords using simple frequency analysis.
     words = re.findall(r'\w+', content.lower())
     word_freq = {}
     for word in words:
@@ -106,7 +106,7 @@ def save_to_csv(data, filename):
         writer.writerow(['Top Keywords', json.dumps(data['top_keywords'])])
 
 
-# Main execution
+
 url = input("Enter the website URL to scrape: ")
 output_file = "website_analysis.csv"
 
@@ -115,7 +115,7 @@ scraped_data = scrape_website(url)
 save_to_csv(scraped_data, output_file)
 print(f"Analysis complete. Results saved to {output_file}")
 
-# Print key findings and recommendations
+
 print("\nKey Findings:")
 print(
     f"1. The website has {len(scraped_data['internal_links'])} internal links and {len(scraped_data['external_links'])} external links.")

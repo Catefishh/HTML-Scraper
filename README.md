@@ -30,7 +30,6 @@ This Python script is an HTML scraper designed for website analysis. It extracts
 1. Run the script:
 2. When prompted, enter the URL of the website you want to analyze.
 3. The script will scrape the website and save the results to a file named `website_analysis.csv` in the same directory.
-4. Review the console output for key findings, recommendations, and an actionable plan.
 
 ## Output
 
